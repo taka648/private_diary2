@@ -1,0 +1,1 @@
+WSL2 Ubuntu otaka_private_diary/otaka_private_diary
