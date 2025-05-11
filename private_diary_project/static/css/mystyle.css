@@ -1,0 +1,10 @@
+/* リスト7.4:コンテンツの中身が少なくても最下部にフッターを固定するCSSスタイルを追加する */ 
+body, #wrapper { 
+  display: flex; 
+  flex-direction: column; 
+  min-height: 1OOvh; 
+} 
+
+footer { 
+  margin-top: auto; 
+} 
