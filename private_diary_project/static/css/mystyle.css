@@ -8,3 +8,8 @@ body, #wrapper {
 footer { 
   margin-top: auto; 
 } 
+
+/* リスト8.6:ナビゲーションバーと問い合わせフォームが重ならないように、フォームの上margin-top(要素の上側の空き)にマージン「6rem」を追加する */
+.my-div-style {
+  margin-top: 6rem;
+}

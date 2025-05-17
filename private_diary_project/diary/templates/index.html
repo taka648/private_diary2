@@ -1,4 +1,4 @@
-<!-- リスト5.11:トップページ用テンプレート -->
+<<!-- リスト5.11:トップページ用テンプレート -->
 <!-- リスト7.5:サンプルアプリのサービス内容に合うものに修正する -->
 <!-- リスト7.5:①base.htmlのblockタグに埋め込むため、extendsタグを使ってbase.htmlを読み込む -->
 {% extends 'base.html' %}
@@ -12,22 +12,24 @@
 <!-- リスト7.5:④ヘッダーをbase.htmlのheaderという名前を付けたblockタグに埋め込む -->
 {% block header %}
 
+<!-- リスト10.10:ナビゲーションバーとトップページに認証用ページヘ遷移するリンクを貼る -->
 <header class="masthead text-center text-white"> 
   <div class="masthead-content"> 
     <div class="container"> 
-
-      <h1 class="masthead-heading mb-0">Private Diary</h1>
-      <h2 class="masthead-subheading mb-0">あなた専用の日記保存サービス</h2>
-
-      <a href="#" class="btn btn-primary btn-xl rounded-pill mt-5">LOG IN</a> 
-    </div>
+      <h1 class="masthead-headin gmb-0">Private Diary</h1> 
+      <h2 class="masthead-subheading mb-0">あなた専用の日記保存サービス</h2> 
+      <!-- リスト10.10:トップページのログインボタンにログインリンクを付ける -->
+      <a href="{%url 'account_login' %}" class="btn btn-primary btn-xl rounded-pill mt-5">LOG IN</a> 
+    </div> 
   </div> 
+
   <div class="bg-circle-1 bg-circle"></div> 
   <div class="bg-circle-2 bg-circle"></div> 
   <div class="bg-circle-3 bg-circle"></div> 
   <div class="bg-circle-4 bg-circle"></div> 
 </header> 
 {% endblock %}
+
 
 <!-- リスト7.5:⑤コンテンツをbase.htmlのcontentsという名前を付けたblockタグに埋め込む -->
 {% block contents %}

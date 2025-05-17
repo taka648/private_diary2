@@ -1,12 +1,15 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+# """Django's command-line utility for administrative tasks."""
 import os
 import sys
 
 
 def main():
-    """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "private_diary_project.settings")
+    # """Run administrative tasks."""
+    # """プログラムの最初で環境変数「DJANGO_SETTINGS_MODULE」が見つからなければ、自動的に「'DJANGO_SETTINGS_MODULE','private_diary.settings'」という環境変数をセットする。"""
+    # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "private_diary_project.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "private_diary_project.settings_dev")
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

@@ -1,0 +1,89 @@
+<!-- リスト11.22:日記一覧ページの各リストをクリックすると日記詳細ページに遷移するように日記一覧ページにリンクを付ける。 -->
+<!-- リスト11.11:トップページ用テンプレート -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}日記一覧 | Private Diary{% endblock %}
+
+{% block active_diary_list %}active{% endblock %}
+
+<!-- リスト11.11:①clean-blog.css(「Clean Blog」テンプレート)を読み込む -->
+{% block head %}
+<link href="{% static 'css/clean-blog.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block contents %}
+<div class="container px-4 px-lg-5 my-div-style">
+  <div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+      <div class="d-flex justify-content-end mb-4">
+        <!-- リスト11.27:日記一覧ページにある「新規作成」ボタンに日記作成ページヘのリンク(href属性)を追加する -->
+        <a class="btn btn-primary float-right" href="{% url 'diary:diary_create' %}">新規作成</a>
+      </div>
+
+
+      <!-- リスト11.15:①diary_listページ。ページネーション機能により、現在ページのデータのみがdiary_listに格納される。 -->
+      <!-- リスト11.11:②Diaryテーブルのレコードを取得して1件1件ループさせる -->
+      {% for diary in diary_list %}
+      <div class="post-preview">
+        <!-- # リスト11.22:① -->
+        <a href="{% url 'diary:diary_detail' diary.pk %}">
+          <h2 class="post-title">
+            {{ diary.title }}
+          </h2>
+          <h3 class="post-subtitle">
+            <!-- リスト11.11:③日記の本文を20桁表示する -->
+            {{ diary.content|truncatechars:20 }}
+          </h3>
+        </a>
+        <p class="post-meta">{{ diary.created_at }}</p>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- リスト11.11:②Diaryテーブルのレコードのリストが空の場合に実行される -->
+      {% empty %}
+      <p>日記がありません。</p>
+      <!-- リスト11.11:② -->
+      {% endfor %}
+
+      <!-- リスト11.15:②ページネ_ション処理「page_obj」オブジェクト -->
+      <!-- ・number:現在のページ番号 -->
+      <!-- ・has_previous/has_next:前/次のページがあるかどうか？ -->
+      <!-- ・previous_page_number/next_page_number:前/次のページ番号 -->
+      <!-- ・paginator.page_range:ページ番号のシーケンス(通常range型のオブジェクト) -->
+      {% if is_paginated %}
+      <ul class="pagination">
+        <!-- 前ページヘのリンク -->
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <!-- ページ数表示 -->
+        {% for page_num in page_obj.paginator.page_range %}
+          {% if page_obj.number == page_num %}
+            <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+          {% else %}
+            <lic lass="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        <!-- 次ページヘのリンク -->
+        {% if page_obj.has_next %}
+          <li class="page-item"> 
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

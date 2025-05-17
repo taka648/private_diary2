@@ -1,172 +1,72 @@
-# リスト5.6:追記
-import os 
-# リスト5.1:private_diary/settings.py:Python 
-from pathlib import Path
+# リスト12.4:本番環境用Diangoプロジェクト設定ファイルを作成する
+from .settings_common import *
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# リスト12.4:①本番運用環境用にセキュリティキーを生成し環境変数から読み込む
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
+# リスト12.4:②デバッグモードを有効にするかどうか(本番運用では必ずFalseにする)
+DEBUG = False
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# リスト12.4:③許可するホスト名のリスト
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-h80au2x5cnfrrz(+kdoxf(utzjdi77kjqm+sh_p^@zw81t31n0"
+# リスト12.4:④⑤静的ファイルを配置する場所
+# 開発環境ではDjangoプロジェクト内に配置した静的ファイルから直接配信していたが、本番環境ではWebサーバーから配信するようにする
+STATIC_ROOT = '/usr/share/nginx/html/static'
+MEDIA_ROOT = '/usr/share/nginx/html/media'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# リスト12.4:⑥Amazon SES関連設定
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+EMAIL_BACKEND ='django_ses.SESBackend' 
+# AWSのリージョンがus-east-1(バージニア北部)以外であれば以下2つの設定が必要
+# AWS_SES_REGION_NAME = 'us-west-2'
+# AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
-
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "diary.apps.DiaryConfig",      # リスト5.1:<= ①
-]
-
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
-
-ROOT_URLCONF = "private_diary_project.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = "private_diary_project.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# リスト5.6:データベース設定
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-DATABASES = { 
-    "default": { 
-        "ENGINE": "django.db.backends.postgresql", 
-        "NAME": "private_diary", 
-        "USER": os.environ.get('DB_USER'),
-        "PASSWORD": os.environ.get('DB_PASSWORD'),
-        "HOST": '',
-        "PORT": '',
-    }
-} 
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
-# リスト5.4:Djangoプロジェクトの言語とタイムゾーンを日本仕様に変更する。
-# LANGUAGE_CODE = "en-us"
-# TIME_ZONE = "UTC"
-LANGUAGE_CODE = "ja" 
-TIME_ZONE = "Asia/Tokyo" 
-
-USE_I18N = True
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = "static/"
-# リスト7.1:静的ファイルの場所(パス)を設定する
-STATICFILES_DIRS = ( 
-    os.path.join(BASE_DIR, "static"),
-) 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# リスト5.7:ロギング設定(開発用)
-LOGGING= { 
-  "version": 1,                      # 1固定
-  "disable_existing_loggers": False, # <= ①既存ロガーを無効化する。True=>False
+# ロギング
+LOGGING = { 
+  'version': 1,
+  'disable_existing_loggers': False,
 
   # ロガーの設定
-  "loggers": { 
+  # リスト12.4:⑦ログレベルが「DEBUG」だった箇所をすべて「INFO」に変更
+  'loggers': {
     # Djangoが利用するロガー
-      "django": { 
-        "handlers": ["console"], 
-        "level": "INFO", 
-      }, 
-      # diaryアプリケーションが利用するロガー 
-      "diary": { 
-        "handlers": ["console"], 
-        "level": "DEBUG", 
-      }, 
+    'django': {
+      'handlers': ['file'],
+      'level': 'INFO',
+    },
+    # diaryアプリケーションが利用するロガー
+    'diary': {
+      'handlers': ['file'],
+      'level': 'INFO',
     }, 
+  }, 
 
-    # ハンドラの設定
-    "handlers": { 
-      "console": { 
-        "level": "DEBUG", 
-        "class": "logging.StreamHandler", # <= ②コンソールヘ出力するハンドラStreamHandler
-        "formatter": "dev" 
-      }, 
-    }, 
+  # ハンドラの設定
+  # リスト12.4:⑧ハンドラを、コンソールヘ出力する「StreamHandler」からファイルに出力する「TimedRotatingFileHandler」に変更
+  # リスト12.4:⑨本番環境で使っている「TimedRotatingFileHandler」で指定できる実行間隔単位
+  'handlers': {
+    'file': {
+      'level': 'INFO',
+      'class': 'logging.handlers. TimedRotatingFileHandler',
+      'filename': os.path.join(BASE_0IR, 'logs/django.log),
+      'formatter': 'prod',
+      'when': '0',      # リスト12.4:⑨ログローテーション(新しいファイルヘの切り替え)間隔の単位(0=日)
+      'interval': 1,    # リスト12.4:⑨ログローテーション間隔(1日単位)
+      'backupCount': 7, # リスト12.4:⑨保存しておくログファイル数
+    },
+  },
 
   # フォーマッタの設定
-  "formatters": { 
-    "dev": { 
-      "format": "\t".join([                # <= ③ログをタブ区切りで出力する
-        "%(asctime)s", 
-        "[%(levelname)s]", 
-        "%(pathname)s(Line:%(lineno)d)", 
-        "%(message)s" 
+  'formatters': {
+    'prod': {
+      'format':'¥t'.join([
+        '%(asctime)s',
+        '[%(levelname)s]',
+        '%(pathname)s(Line:%(lineno)d)',
+        '%(message)s'
       ]) 
-    }, 
-  } 
-} 
+    },
+  }
+}
